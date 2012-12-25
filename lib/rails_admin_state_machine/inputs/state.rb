@@ -13,6 +13,10 @@ module RailsAdmin
             bindings[:object].class.state_machine(@name).states.map {|s| [s.human_name, s.name] }
           end
 
+          register_instance_option :enum_method do
+            @enum_method ||= (bindings[:object].class.respond_to?("#{name}_enum") || bindings[:object].respond_to?("#{name}_enum")) ? "#{name}_enum" : name
+          end
+
           register_instance_option(:pretty_value) do
             if enum.is_a?(::Hash)
               enum.reject{|k,v| v.to_s != value.to_s}.keys.first.to_s.presence || value.presence || ' - '
@@ -21,6 +25,10 @@ module RailsAdmin
             else
               value.presence || ' - '
             end
+          end
+
+          register_instance_option :multiple? do
+            properties && [:serialized].include?(properties[:type])
           end
         end
       end
